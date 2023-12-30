@@ -1,0 +1,68 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5.1"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "opengl3_minimo_linux",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "debug_exe::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-debug_exe-Debug-1689c3be7404ac49b2c2.json",
+					"name" : "debug_exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "release_exe::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-release_exe-Debug-46bdb82724cd5bf71bee.json",
+					"name" : "release_exe",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/pablo/Escritorio/Repositorios/opengl3-minimo/build",
+		"source" : "/home/pablo/Escritorio/Repositorios/opengl3-minimo/builds/linux"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}

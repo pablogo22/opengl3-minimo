@@ -391,6 +391,63 @@ void BucleEventosGLFW()
 }
 // ---------------------------------------------------------------------------------------------
 
+const unsigned int n = 5 ;
+
+// EJERCICIO 1.1
+/*
+    LINE_LOOP --> n vértices
+    LINES --> 2*n
+*/
+
+
+// EJERCICIO 1.2
+/*
+    Generamos los 3*n vértices
+*/
+
+// EJERCICIO 1.3
+/*
+2 VBOs, para LINE_LOOP solo se usan los n primeros del de posiciones,
+para el relleno se usan los índices completos.
+*/
+
+// EJERCICIO 2.
+/*
+k²
+12k²
+24(k-1)(k-1)
+
+lo sumo todo
+
+36k²
+
+EJERCICO 2.6
+||axb||/2
+
+
+
+
+*/
+
+
+// EJERCICIO 2.1
+
+
+
+
+
+void generaVerticesPoligono() {
+    
+    std::vector<glm::vec2> vertices ;
+    
+    for (unsigned i=0; i<n; i++) {
+        vertices.push_back(glm::vec2(cos(2*i*M_PI/n), sin(2*i*M_PI/n)));
+    }
+
+    DescrVAO * dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+
+}
+
 int main( int argc, char *argv[] )
 {
     using namespace std ;

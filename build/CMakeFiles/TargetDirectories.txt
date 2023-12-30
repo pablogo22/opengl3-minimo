@@ -1,0 +1,4 @@
+/home/pablo/Escritorio/Repositorios/opengl3-minimo/build/CMakeFiles/rebuild_cache.dir
+/home/pablo/Escritorio/Repositorios/opengl3-minimo/build/CMakeFiles/edit_cache.dir
+/home/pablo/Escritorio/Repositorios/opengl3-minimo/build/CMakeFiles/release_exe.dir
+/home/pablo/Escritorio/Repositorios/opengl3-minimo/build/CMakeFiles/debug_exe.dir
