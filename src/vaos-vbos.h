@@ -223,6 +223,8 @@ class DescrVAO
    //
    void crearVAO();
 
+   void myDraw(const GLenum mode, GLsizei n ) ;
+
    // Añade un descriptor de VBO de atributos 
    //
    // @param index (unsigned) índice del atributo (no puede ser 0, la tabla de posiciones se da en el constructor)

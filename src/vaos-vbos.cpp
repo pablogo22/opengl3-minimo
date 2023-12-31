@@ -441,6 +441,30 @@ void DescrVAO::draw( const GLenum mode )
 
    CError();
 }
+
+
+void DescrVAO::myDraw( const GLenum mode, GLsizei n )
+{
+   CError();
+   assert( dvbo_atributo[0] != nullptr ); // asegurarnos que hay una tabla de coordenadas de posición.
+   check_mode( mode );                // comprobar que el modo es el correcto.
+   
+   // si el VAO no está creado, crearlo y dejarlo 'binded', si ya está creado, solo se hace 'bind'
+   if ( array == 0 )
+      crearVAO();
+   else 
+      glBindVertexArray( array );
+      
+   CError();
+
+   // dibujar
+   glDrawArrays( mode, first, n );
+
+   CError();
+   glBindVertexArray( 0 );
+
+   CError();
+}
 // ------------------------------------------------------------------------------------------------------
 
 // Libera toda la memoria ocupada por el VAO y los VBOs en la memoria de 

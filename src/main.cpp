@@ -39,138 +39,333 @@ Cauce
     * cauce            = nullptr ; // puntero al objeto de la clase 'Cauce' en uso.
 
 
-// ---------------------------------------------------------------------------------------------
-// función que se encarga de visualizar un triángulo relleno en modo diferido,
-// no indexado, usando la clase 'DescrVAO' (declarada en 'vaos-vbos.h')
-// el triángulo se dibuja en primer lugar relleno con colores, y luego las aristas en negro
+/******************************************************************************/
+/******************************************************************************/
 
+DescrVAO * dvao = nullptr;
 
-void DibujarTriangulo_NoInd( )
-{
-    assert( glGetError() == GL_NO_ERROR );
+// EJERCICIO 1.1 a)
+void generaVerticesPoligono11a(unsigned n) {
 
-    // la primera vez, crear e inicializar el VAO
-    if ( vao_no_ind == nullptr )
-    {
-        // número de vértices que se van a dibujar
-        constexpr unsigned num_verts = 3 ;
-
-        // tablas de posiciones y colores de vértices (posiciones en 2D, con Z=0)
-        const GLfloat
-            posiciones[ num_verts*2 ] = {  -0.8, -0.8,      +0.8, -0.8,     0.0, 0.8      },
-            colores   [ num_verts*3 ] = {  1.0, 0.0, 0.0,   0.0, 1.0, 0.0,  0.0, 0.0, 1.0 };
-
-        // Crear VAO con posiciones, colores e indices
-        vao_no_ind = new DescrVAO( cauce->num_atribs, new DescrVBOAtribs( cauce->ind_atrib_posiciones, GL_FLOAT, 2, num_verts, posiciones ));
-        vao_no_ind->agregar( new DescrVBOAtribs( cauce->ind_atrib_colores, GL_FLOAT, 3, num_verts, colores ));    
-    }
+    assert( n > 2) ;
     
-    assert( glGetError() == GL_NO_ERROR );
+    std::vector<glm::dvec2> vertices ;
+    
+    // LINE_LOOP
+    for (unsigned i=0; i<n; i++) {
+        vertices.push_back(glm::dvec2(cos(2*i*M_PI/n), sin(2*i*M_PI/n)));
+    }
 
-    // duibujar relleno usando los colores del VAO
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    cauce->fijarUsarColorPlano( false );
-    vao_no_ind->habilitarAtrib( cauce->ind_atrib_colores, true );
-    vao_no_ind->draw( GL_TRIANGLES );
+    dvao = new DescrVAO(1, new DescrVBOAtribs(0,GL_DOUBLE,2, vertices.size(),&vertices)) ;
 
-    assert( glGetError() == GL_NO_ERROR );
-
-    // dibujar las líneas usando color negro
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    cauce->fijarUsarColorPlano( true );
-    cauce->fijarColor( { 0.0, 0.0, 0.0 });
-    vao_no_ind->habilitarAtrib( cauce->ind_atrib_colores, false );
-    vao_no_ind->draw( GL_TRIANGLES );
-
-    assert( glGetError() == GL_NO_ERROR );
 }
 
-// ---------------------------------------------------------------------------------------------
-// función que se encarga de visualizar un triángulo  en modo diferido,
-// indexado, usando la clase  'DescrVAO' (declarada en vaos-vbos.h)
-// el triángulo se dibuja en primer lugar relleno con colores, y luego las aristas en negro
+// EJERCICIO 1.1 b)
+void generaVerticesPoligono11b(unsigned n) {
 
-void DibujarTriangulo_Ind( )
-{
-    assert( glGetError() == GL_NO_ERROR );
-
-    if ( vao_ind == nullptr )
-    {
-         // número de vértices e índices que se van a dibujar
-        constexpr unsigned num_verts = 3, num_inds  = 3 ;
-
-        // tablas de posiciones y colores de vértices (posiciones en 2D, con Z=0)
-        const GLfloat
-            posiciones[ num_verts*2 ] = {  -0.4, -0.4,      +0.4, -0.4,     0.0, +0.4      },
-            colores   [ num_verts*3 ] = {  1.0, 0.0, 0.0,   0.0, 1.0, 0.0,  0.0, 0.0, 1.0 } ;
-        const GLuint
-            indices   [ num_inds    ] = { 0, 1, 2 };
-
-        vao_ind = new DescrVAO( cauce->num_atribs, new DescrVBOAtribs( cauce->ind_atrib_posiciones, GL_FLOAT, 2, num_verts, posiciones) );
-        vao_ind->agregar( new DescrVBOAtribs( cauce->ind_atrib_colores, GL_FLOAT, 3, num_verts, colores) ) ;
-        vao_ind->agregar( new DescrVBOInds( GL_UNSIGNED_INT, num_inds, indices ));
-    }
-   
-    assert( glGetError() == GL_NO_ERROR );
+    assert( n > 2) ;
     
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    cauce->fijarUsarColorPlano( false );
-    vao_ind->habilitarAtrib( cauce->ind_atrib_colores, true );
-    vao_ind->draw( GL_TRIANGLES );
+    std::vector<glm::dvec2> vertices ;
+    
+    // LINES
+    vertices.push_back(glm::dvec2(cos(2*0*M_PI/n), sin(2*0*M_PI/n)));
 
-    assert( glGetError() == GL_NO_ERROR );
-   
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    cauce->fijarColor( { 0.0, 0.0, 0.0 });
-    vao_ind->habilitarAtrib( cauce->ind_atrib_colores, false );
-    vao_ind->draw( GL_TRIANGLES );
+    for (unsigned i=1; i<n; i++) {
+        vertices.push_back(glm::dvec2(cos(2*i*M_PI/n), sin(2*i*M_PI/n)));
+        vertices.push_back(glm::dvec2(cos(2*i*M_PI/n), sin(2*(i*M_PI/n))));
+    }
 
-    assert( glGetError() == GL_NO_ERROR );
+    vertices.push_back(glm::dvec2(cos(2*0*M_PI/n), sin(2*0*M_PI/n)));
+
+    dvao = new DescrVAO(1, new DescrVBOAtribs(0,GL_DOUBLE,2, vertices.size(),&vertices)) ;
+
 }
 
-// ---------------------------------------------------------------------------------------------
-// función que se encarga de visualizar un triángulo relleno en modo diferido,
-// usando vectores con entradas de tipos GLM (vec2, vec3, uvec3)
-// el triángulo se dibuja en primer lugar relleno con colores, y luego las aristas en negro
+// EJERCICIO 1.2 a)
+void generaVerticesPoligono12a(unsigned n) {
 
-void DibujarTriangulo_glm( )
-{    
+    assert( n > 2) ;
+    
+    std::vector<glm::vec3> vertices ;
+    
+    // LINES
+    for (unsigned i=0; i<n; i++) {
+        vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+        vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+        vertices.push_back(glm::vec3(cos(2*(i+1)*M_PI/n), sin(2*(i+1)*M_PI/n), 0.0));
+    }
+
+    dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+
+}
+
+// EJERCICIO 1.2 b)
+void generaVerticesPoligono12b(unsigned n) {
+
+    assert( n > 2) ;
+    
+    std::vector<glm::vec3> vertices ;
+    std::vector<glm::uvec3> triangulos ;
+    
+    // LINES
+    vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+
+    for (unsigned i=0; i<n; i++) {
+        vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+    }
+
+    for (unsigned i=1; i<n ; i++) {
+        triangulos.push_back(glm::vec3(0,i,i+1)) ;
+    }
+
+    triangulos.push_back(glm::vec3(0,n,1)) ;
+
+    dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+    dvao -> agregar(new DescrVBOInds(triangulos)) ;
+
+}
+
+// EJERCICIO 1.3 a)
+
+DescrVAO * dvao2 ;
+
+void generaVerticesPoligono13(unsigned n) {
+
     using namespace std ;
     using namespace glm ;
 
     assert( glGetError() == GL_NO_ERROR );
 
-    if ( vao_glm == nullptr )
+    if ( dvao == nullptr )
     {
 
-        // tablas de posiciones y colores de vértices (posiciones en 2D, con Z=0)
-        const vector<vec2>   posiciones = {  {-0.4, -0.4},     {+0.42, -0.47},   {0.1, +0.37}    };
-        const vector<vec3>   colores    = {  {1.0, 1.0, 0.0},  {0.0, 1.0, 1.0},  {1.0, 0.0, 1.0} };
-        const vector<uvec3>  indices    = {  { 0, 1, 2 }};   // (un único triángulo)      
+        // VAO DE RELLENO ( 1.2 b) )
 
-        vao_glm = new DescrVAO( cauce->num_atribs, new DescrVBOAtribs( cauce->ind_atrib_posiciones, posiciones ));
-        vao_glm->agregar( new DescrVBOAtribs( cauce->ind_atrib_colores, colores )) ;
-        vao_glm->agregar( new DescrVBOInds( indices ) );
+        vector<glm::vec3> vertices ;
+        vector<glm::uvec3> triangulos ;
 
-        assert( glGetError() == GL_NO_ERROR );
+        // LINES
+        vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+
+        for (unsigned i=0; i<n; i++) {
+            vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+        }
+
+        for (unsigned i=1; i<n ; i++) {
+            triangulos.push_back(glm::vec3(0,i,i+1)) ;
+        }
+
+        triangulos.push_back(glm::vec3(0,n,1)) ;
+
+        dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+        dvao -> agregar(new DescrVBOInds(triangulos)) ;
+
+
+        // VAO DE ARISTAS ( 1.1 a))
+        vector<dvec2> posiciones ;
+
+        for (unsigned i=0; i<n; i++) {
+            posiciones.push_back(glm::dvec2(cos(2*i*M_PI/n), sin(2*i*M_PI/n)));
+        }
+        
+        dvao2 = new DescrVAO(1, new DescrVBOAtribs( cauce->ind_atrib_posiciones, GL_DOUBLE, 2, posiciones.size(), posiciones.data()));
+   
     }
-   
-    assert( glGetError() == GL_NO_ERROR );
-    
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    cauce->fijarUsarColorPlano( false );
-    vao_glm->habilitarAtrib( cauce->ind_atrib_colores, true );
-    vao_glm->draw( GL_TRIANGLES );
 
-    assert( glGetError() == GL_NO_ERROR );
-   
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    cauce->fijarColor( { 0.0, 0.0, 0.0 });
-    vao_glm->habilitarAtrib( cauce->ind_atrib_colores, false );
-    vao_glm->draw( GL_TRIANGLES );
+    glVertexAttrib3f(cauce->ind_atrib_colores, 0.1f,0.9f,0.7f) ;
+    dvao->draw( GL_TRIANGLES );
+
+    glVertexAttrib3f(cauce->ind_atrib_colores, 0.0f,0.0f,0.0f) ;
+    dvao2->draw( GL_LINE_LOOP ) ;
 
     assert( glGetError() == GL_NO_ERROR );
 }
+
+// EJERCICIO 1.4 (35:55)
+
+void generaVerticesPoligono14(unsigned n) {
+
+    using namespace std ;
+    using namespace glm ;
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    if ( dvao == nullptr )
+    {
+
+        // VAO DE RELLENO ( 1.2 b) )
+
+        vector<glm::vec3> vertices ;
+        vector<glm::uvec3> triangulos ;
+
+        // LINES
+
+        for (unsigned i=0; i<n; i++) {
+            vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+        }
+
+        vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+
+        for (unsigned i=0; i<n-1 ; i++) {
+            triangulos.push_back(glm::vec3(n,i,i+1)) ;
+        }
+
+        triangulos.push_back(glm::vec3(n,n-1,0)) ;
+
+        dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+        dvao -> agregar(new DescrVBOInds(triangulos)) ;
+    }
+
+    dvao -> crearVAO() ;
+
+    glVertexAttrib3f(cauce->ind_atrib_colores, 0.1f,0.9f,0.7f) ;
+    dvao->draw( GL_TRIANGLES );
+
+    glVertexAttrib3f(cauce->ind_atrib_colores, 0.0f,0.0f,0.0f) ;
+    dvao->myDraw( GL_LINE_LOOP , n) ;
+
+    assert( glGetError() == GL_NO_ERROR );
+}
+
+// EJERCICIO 1.5 
+
+void generaVerticesPoligono15(unsigned n) {
+
+    using namespace std ;
+    using namespace glm ;
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    if ( dvao == nullptr )
+    {
+
+        // VAO DE RELLENO ( 1.2 b) )
+
+        vector<glm::vec3> vertices ;
+        vector<glm::uvec3> triangulos ;
+
+        // LINES
+
+        glm::vec3 color ;
+        vector <glm::vec3> colores ;
+
+        for (unsigned i=0; i<n; i++) {
+            vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+
+            color = {(float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX } ;
+            colores.push_back(color) ;
+        }
+
+        vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+        color = {(float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX } ;
+        colores.push_back(color) ;
+
+
+
+        for (unsigned i=0; i<n-1 ; i++) {
+            triangulos.push_back(glm::vec3(n,i,i+1)) ;
+        }
+
+        triangulos.push_back(glm::vec3(n,n-1,0)) ;
+
+        dvao = new DescrVAO(2, new DescrVBOAtribs(cauce->ind_atrib_posiciones,vertices)) ;
+        dvao -> agregar(new DescrVBOInds(triangulos)) ;
+        dvao -> agregar(new DescrVBOAtribs(cauce->ind_atrib_colores, colores)) ;
+    }
+
+    dvao -> crearVAO() ;
+
+    dvao->draw( GL_TRIANGLES );
+
+    dvao->habilitarAtrib(cauce->ind_atrib_colores, false) ;
+    dvao->myDraw( GL_LINE_LOOP , n) ;
+
+    assert( glGetError() == GL_NO_ERROR );
+}
+
+// EJERCICIO 1.6 (AOS)
+
+void generaVerticesPoligono16(unsigned n) {
+
+    using namespace std ;
+    using namespace glm ;
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    GLuint array = 0 ;
+    GLuint buffer ;
+
+    glm::vec3 color ;
+    vector<glm::vec3> vertices_colores ;
+    vector<glm::uvec3> triangulos ;
+
+    if ( dvao == nullptr )
+    {
+
+        // VAO DE RELLENO ( 1.2 b) )
+
+        // LINES
+        for (unsigned i=0; i<n; i++) {
+            vertices_colores.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+
+            color = {(float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX } ;
+            vertices_colores.push_back(color) ;
+        }
+
+        vertices_colores.push_back(glm::vec3(0.0f,0.0f,0.0f));
+        color = {(float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX } ;
+        vertices_colores.push_back(color) ;
+
+        // INDICES
+        for (unsigned i=0; i<n-1 ; i++) {
+            triangulos.push_back(glm::vec3(n,i,i+1)) ;
+        }
+
+        triangulos.push_back(glm::vec3(n,n-1,0)) ;
+
+        // CREAMOS VAO
+        glGenVertexArrays( 1, &array ); assert( array > 0 );
+        glBindVertexArray( array );
+
+        // CREAR VBO
+        glGenBuffers( 1, &buffer ); assert( 0 < buffer );
+        glBindBuffer( GL_ARRAY_BUFFER, buffer ); 
+        glBufferData( GL_ARRAY_BUFFER, 3*sizeof(float)*vertices_colores.size(), vertices_colores.data(), GL_STATIC_DRAW );  
+
+        // POSICIONES
+        glVertexAttribPointer( cauce->ind_atrib_posiciones, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), 0);
+        glBindBuffer( GL_ARRAY_BUFFER, buffer );
+        glEnableVertexAttribArray(cauce->ind_atrib_posiciones);
+
+        // COLORES 
+        glVertexAttribPointer( cauce->ind_atrib_colores, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (GLvoid*)(3*sizeof(float)));
+        glBindBuffer( GL_ARRAY_BUFFER, buffer );
+        glEnableVertexAttribArray(cauce->ind_atrib_colores);
+
+        // INDICES
+        glGenBuffers( 1, &buffer ); assert( 0 < buffer );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffer ); 
+        glBufferData( GL_ELEMENT_ARRAY_BUFFER, 3*sizeof(unsigned int)*triangulos.size(), triangulos.data(), GL_STATIC_DRAW );
+
+    }
+
+    glDisable( GL_DEPTH_TEST );
+    
+    glBindVertexArray( array );
+    glDrawElements( GL_TRIANGLES, 3*triangulos.size(), GL_UNSIGNED_INT, 0);
+
+    glDisableVertexAttribArray(1) ;
+    glDrawArrays( GL_LINE_LOOP, 0, n );
+
+    CError();
+    glBindVertexArray( 0 );
+}
+
+
+/******************************************************************************/
+/******************************************************************************/
+
+
 
 // ---------------------------------------------------------------------------------------------
 // función que se encarga de visualizar el contenido en la ventana
@@ -201,25 +396,13 @@ void VisualizarFrame( )
     // limpiar la ventana
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    // habilitar EPO por Z-buffer (test de profundidad)
+    // deshabilitar EPO por Z-buffer (test de profundidad)
     glDisable( GL_DEPTH_TEST );
 
-    // Dibujar un triángulo, es una secuncia de vértice no indexada.
-    DibujarTriangulo_NoInd();
-
-    // usa el color plano para el segundo triángulo
-    cauce->fijarUsarColorPlano( true );
-
-    // dibujar triángulo indexado (rotado y luego desplazado) 
-    cauce->pushMM();
-        cauce->compMM( translate( vec3{ 0.4f, 0.1f, -0.1f}  ));
-        cauce->compMM( rotate(  radians(23.0f), vec3{ 0.0f, 0.0f, 1.0f}   ));
-        DibujarTriangulo_Ind();     // indexado
-    cauce->popMM();
-
-    // dibujar un triángulo usando vectores de GLM
-    DibujarTriangulo_glm() ;
-
+    // AQUÍ LO QUE SE DIBUJA BUSCA AQUI
+    // Dibujado
+    generaVerticesPoligono16(12) ;
+    
     // comprobar y limpiar variable interna de error
     assert( glGetError() == GL_NO_ERROR );
 
@@ -391,67 +574,18 @@ void BucleEventosGLFW()
 }
 // ---------------------------------------------------------------------------------------------
 
-const unsigned int n = 5 ;
-
-// EJERCICIO 1.1
-/*
-    LINE_LOOP --> n vértices
-    LINES --> 2*n
-*/
-
-
-// EJERCICIO 1.2
-/*
-    Generamos los 3*n vértices
-*/
-
-// EJERCICIO 1.3
-/*
-2 VBOs, para LINE_LOOP solo se usan los n primeros del de posiciones,
-para el relleno se usan los índices completos.
-*/
-
-// EJERCICIO 2.
-/*
-k²
-12k²
-24(k-1)(k-1)
-
-lo sumo todo
-
-36k²
-
-EJERCICO 2.6
-||axb||/2
 
 
 
 
-*/
-
-
-// EJERCICIO 2.1
-
-
-
-
-
-void generaVerticesPoligono() {
-    
-    std::vector<glm::vec2> vertices ;
-    
-    for (unsigned i=0; i<n; i++) {
-        vertices.push_back(glm::vec2(cos(2*i*M_PI/n), sin(2*i*M_PI/n)));
-    }
-
-    DescrVAO * dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
-
-}
+// ----------------------------------------------------------------------------------------------------
 
 int main( int argc, char *argv[] )
 {
     using namespace std ;
     cout << "Programa mínimo de OpenGL 3.3 o superior" << endl ;
+
+    srand(time(NULL)) ; // Para poder generar números aleatorios
 
     InicializaGLFW( argc, argv ); // Crea una ventana, fija funciones gestoras de eventos
     InicializaOpenGL() ;          // Compila vertex y fragment shaders. Enlaza y activa programa. Inicializa GLEW.
