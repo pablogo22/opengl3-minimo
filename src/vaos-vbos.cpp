@@ -442,7 +442,7 @@ void DescrVAO::draw( const GLenum mode )
    CError();
 }
 
-
+// 1.4
 void DescrVAO::myDraw( const GLenum mode, GLsizei n )
 {
    CError();

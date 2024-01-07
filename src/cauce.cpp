@@ -301,3 +301,26 @@ void Cauce::popMM()
    glUniformMatrix4fv( loc_mat_modelview, 1, GL_FALSE, glm::value_ptr(mat_modelview) );
 }
 // --------------------------------------------------------------------------------------------
+
+void Cauce::fijarRegionVisible( const float x0, const float x1, 
+                         const float y0, const float y1, 
+                         const float z0, const float z1) 
+{
+
+   float sx = 2 / (x1-x0) , sy = 2 / (y1-y0) , sz = 2 / (z1-z0) ;
+   float cx = (x0+x1) / 2 , cy = (y0+y1)/2, cz = (z0+z1)/2 ;
+   
+   GLfloat matriz_proyeccion[16] = 
+      {
+         sx, 0 , 0, -cx * sx,
+         0, sy, 0, -cy*sy,
+         0, 0, sz, -cz*sz,
+         0, 0, 0, 1
+      } ;
+
+   GLint loc_proyeccion ;
+
+   glUniformMatrix4fv( loc_proyeccion, 1, GL_TRUE, matriz_proyeccion) ;
+
+   
+}

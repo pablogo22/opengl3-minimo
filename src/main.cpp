@@ -361,7 +361,174 @@ void generaVerticesPoligono16(unsigned n) {
     glBindVertexArray( 0 );
 }
 
+// EJERCICIO 1.7: Cauce::fijarRegionVisible()
 
+// EJERCICIO 2.5
+
+void max(const unsigned valor1, const unsigned valor2, unsigned &valor_max, unsigned &valor_min) {
+    
+    valor_max = valor1 ;
+    valor_min = valor2 ;
+
+    if (valor1 < valor2) {
+        valor_max = valor2;
+        valor_min = valor1;
+    }
+}
+
+bool busca(const unsigned valor, const std::vector<unsigned> &vector_vertices) {
+
+    for (unsigned i=0; i<vector_vertices.size(); i++)
+        if (valor == vector_vertices[i])
+            return true ;
+
+    return false ;
+        
+}
+
+
+void problema25a(std::vector<glm::vec3> &vertices, std::vector<glm::uvec3> &triangulos, unsigned int k) {
+
+    // EJERCICIO
+    using namespace std ;
+    using namespace glm ;
+
+    vector <uvec2> ari ;
+
+    // Cada entrada tiene un tamaño prefijado k (que no depende del tamaño de la malla)
+    vector <vector<unsigned>> vertices_adyacentes ;
+
+    // Tamaño de la estructura de vértices
+    vertices_adyacentes.resize(vertices.size()) ;
+
+    // Tamaño del vector asociado a cada vértice
+    for (unsigned i=0; i<vertices_adyacentes.size(); i++) 
+        vertices_adyacentes[i].reserve(k) ;
+
+    // Construcción tabla aristas
+    for (unsigned i=0; i<triangulos.size(); i++) {
+
+        uvec2 ari1 = {triangulos[i][0],triangulos[i][1]} ;
+        unsigned vertice1_max , vertice1_min ;
+        max(ari1[0],ari1[1], vertice1_max, vertice1_min) ;
+        
+        if (!busca(vertice1_max, vertices_adyacentes[vertice1_min])) 
+            vertices_adyacentes[vertice1_min].push_back(vertice1_max) ;
+
+        uvec2 ari2 = {triangulos[i][1],triangulos[i][2]} ;
+        unsigned vertice2_max , vertice2_min ;
+        max(ari2[0],ari2[1], vertice2_max, vertice2_min) ;
+
+        if (!busca(vertice2_max, vertices_adyacentes[vertice2_min])) 
+            vertices_adyacentes[vertice2_min].push_back(vertice2_max) ;
+
+        uvec2 ari3 = {triangulos[i][2],triangulos[i][0]} ;
+        unsigned vertice3_max , vertice3_min ;
+        max(ari3[0],ari3[1], vertice3_max, vertice3_min) ;
+
+        if (!busca(vertice3_max, vertices_adyacentes[vertice3_min])) 
+            vertices_adyacentes[vertice3_min].push_back(vertice3_max) ;
+
+    }
+
+    for (unsigned i=0; i<vertices_adyacentes.size(); i++) {
+        for (unsigned j=0; j<vertices_adyacentes[i].size(); j++)
+            ari.push_back({i,vertices_adyacentes[i][j]}) ;
+    }
+
+    cout << "Número de aristas: " << ari.size() << endl ;
+
+    for (unsigned int i=0; i<ari.size(); i++) {
+        cout << "(" << ari[i][0] << "," << ari[i][1] << ")" << endl ;
+    }
+
+}
+
+void problema25b(std::vector<glm::vec3> &vertices, std::vector<glm::uvec3> &triangulos, unsigned int k) {
+    
+    // EJERCICIO
+    using namespace std ;
+    using namespace glm ;
+
+    vector <uvec2> ari ;
+
+    // Cada entrada tiene un tamaño prefijado k (que no depende del tamaño de la malla)
+    vector <vector<unsigned>> vertices_adyacentes ;
+
+    // Tamaño de la estructura de vértices
+    vertices_adyacentes.resize(vertices.size()) ;
+
+    // Tamaño del vector asociado a cada vértice
+    for (unsigned i=0; i<vertices_adyacentes.size(); i++) 
+        vertices_adyacentes[i].reserve(k) ;
+
+    // Construcción tabla aristas
+    for (unsigned i=0; i<triangulos.size(); i++) {
+
+        uvec2 ari1 = {triangulos[i][0],triangulos[i][1]} ;
+        if (ari1[0] < ari1[1])
+            vertices_adyacentes[ari1[0]].push_back(ari1[1]) ;
+
+        uvec2 ari2 = {triangulos[i][1],triangulos[i][2]} ;
+        if (ari2[0] < ari2[1]) 
+            vertices_adyacentes[ari2[0]].push_back(ari2[1]) ;
+
+        uvec2 ari3 = {triangulos[i][2],triangulos[i][0]} ;
+        if (ari3[0] < ari3[1]) 
+            vertices_adyacentes[ari3[0]].push_back(ari3[1]) ;
+
+    }
+
+    for (unsigned i=0; i<vertices_adyacentes.size(); i++) {
+        for (unsigned j=0; j<vertices_adyacentes[i].size(); j++)
+            ari.push_back({i,vertices_adyacentes[i][j]}) ;
+    }
+
+    cout << "Número de aristas: " << ari.size() << endl ;
+
+    for (unsigned int i=0; i<ari.size(); i++) {
+        cout << "(" << ari[i][0] << "," << ari[i][1] << ")" << endl ;
+    }
+
+}
+
+
+void problema26() {
+
+    std::vector<glm::vec3> vertices ;
+    std::vector<glm::uvec3> triangulos ;
+    
+    // LINES
+    vertices.push_back(glm::vec3(0.0f,0.0f,0.0f));
+
+    unsigned n = 100;
+
+    for (unsigned i=0; i<n; i++) {
+        vertices.push_back(glm::vec3(cos(2*i*M_PI/n), sin(2*i*M_PI/n),0.0));
+    }
+
+    for (unsigned i=1; i<n ; i++) {
+        triangulos.push_back(glm::vec3(0,i,i+1)) ;
+    }
+
+    triangulos.push_back(glm::vec3(0,n,1)) ;
+
+    using namespace glm ;
+    using namespace std ;
+
+    float area = 0 ;
+
+    for (unsigned i=0; i<triangulos.size(); i++) {
+        vec3 v1 = vertices[triangulos[i][1]] - vertices[triangulos[i][0]] ;
+        vec3 v2 = vertices[triangulos[i][2]] - vertices[triangulos[i][0]] ;
+
+        vec3 v1xv2 = cross(v1,v2) ;
+        float euclidean_norm = sqrt(v1xv2[0]*v1xv2[0] + v1xv2[1]*v1xv2[1] + v1xv2[2]*v1xv2[2]) ;
+        area += euclidean_norm / 2 ;
+    }
+
+    cout << "Area = " << area << endl ;
+}
 /******************************************************************************/
 /******************************************************************************/
 
@@ -398,6 +565,21 @@ void VisualizarFrame( )
 
     // deshabilitar EPO por Z-buffer (test de profundidad)
     glDisable( GL_DEPTH_TEST );
+
+    // EJERCICIO 1.8: ARREGLAR EL REDIMENSIONADO
+    float proporcion_viewport = (float) ancho_actual / alto_actual ;
+
+    if (proporcion_viewport > 1) {
+        float nuevo_ancho = 2 * proporcion_viewport ;
+        cauce->fijarRegionVisible(-nuevo_ancho/2,nuevo_ancho/2, -1, 1, -1, 1) ;
+    }
+    else {
+        float nuevo_alto = 2 / proporcion_viewport ;
+        cauce->fijarRegionVisible(-1, 1, -nuevo_alto/2, nuevo_alto/2, -1, 1) ;
+    }
+
+   assert( glGetError() == GL_NO_ERROR );
+
 
     // AQUÍ LO QUE SE DIBUJA BUSCA AQUI
     // Dibujado
