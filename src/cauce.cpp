@@ -310,7 +310,7 @@ void Cauce::fijarRegionVisible( const float x0, const float x1,
    float sx = 2 / (x1-x0) , sy = 2 / (y1-y0) , sz = 2 / (z1-z0) ;
    float cx = (x0+x1) / 2 , cy = (y0+y1)/2, cz = (z0+z1)/2 ;
    
-   GLfloat matriz_proyeccion[16] = 
+   glm::mat4 matriz_proyeccion = 
       {
          sx, 0 , 0, -cx * sx,
          0, sy, 0, -cy*sy,
@@ -318,9 +318,7 @@ void Cauce::fijarRegionVisible( const float x0, const float x1,
          0, 0, 0, 1
       } ;
 
-   GLint loc_proyeccion ;
-
-   glUniformMatrix4fv( loc_proyeccion, 1, GL_TRUE, matriz_proyeccion) ;
+   fijarMatrizProyeccion(matriz_proyeccion) ;
 
    
 }

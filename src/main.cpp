@@ -38,9 +38,12 @@ DescrVAO
 Cauce 
     * cauce            = nullptr ; // puntero al objeto de la clase 'Cauce' en uso.
 
+/******************************************************************************/
+/******************************************************************************/
 
-/******************************************************************************/
-/******************************************************************************/
+
+
+
 
 DescrVAO * dvao = nullptr;
 
@@ -529,6 +532,214 @@ void problema26() {
 
     cout << "Area = " << area << endl ;
 }
+
+
+/*****************************************************************************/
+// GANCHOS
+
+// PROBLEMA 2.15
+void gancho() {
+    
+    using namespace glm ;
+    using namespace std ;
+
+    vector <vec2> vertices = {{0.0,0.0}, {1.0,0.0}, {1.0,1.0}, {0.0,1.0},{0.0,2.0}} ;
+
+    DescrVAO * dvao = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+
+    dvao -> draw(GL_LINE_STRIP) ;
+
+}
+
+// PROBLEMA 2.16
+void gancho_x4() {
+    
+    using namespace glm ;
+    using namespace std ;
+
+    cauce -> resetMM() ;
+    gancho() ;
+    cauce -> compMM(translate(vec3(0.0f,2.0f,0.0f))) ;
+    cauce -> compMM(rotate(radians(90.0f), vec3(0.0f,0.0f,1.0f))) ;
+    gancho() ;
+    cauce -> resetMM() ;
+    cauce -> compMM(translate(vec3(-2.0f,2.0f,0.0f))) ;
+    cauce -> compMM(rotate(radians(180.0f), vec3(0.0f,0.0f,1.0f))) ;
+    gancho() ;
+    cauce -> resetMM() ;
+    cauce -> compMM(translate(vec3(-2.0f,0.0f,0.0f))) ;
+    cauce -> compMM(rotate(radians(270.0f), vec3(0.0f,0.0f,1.0f))) ;
+    gancho() ;
+
+
+
+    cauce -> resetMM() ;
+}
+
+// PROBLEMA 2.17
+void gancho_2p(glm::vec3 p0, glm::vec3 p1) {
+    
+    using namespace glm ;
+    using namespace std ;
+
+    assert (p0[2] == 1.0 && p1[2] == 1) ;
+
+    cauce -> resetMM() ;
+
+    vec3 vector_p0_p1 = p1 - p0 ;
+    vec3 vector_p0_p1_nor = normalize(vector_p0_p1) ;
+    float norm = length(vector_p0_p1) ;
+    float angle = atan2(vector_p0_p1_nor[1],vector_p0_p1_nor[0]) ;
+
+    if (angle >= M_PI / 2)
+        angle -= M_PI / 2 ;
+    else if (angle >= 0)
+        angle = -(M_PI / 2 - angle) ;
+    else    
+        angle = - M_PI / 2 + angle ;
+
+    cauce -> compMM(translate(p0)) ;
+    cauce -> compMM(rotate(angle,vec3(0.0f,0.0f,1.0f))) ;
+    cauce -> compMM(scale(vec3(norm/2.0f,norm/2.0f,0.0f))) ; 
+    gancho() ;
+     
+}
+
+// PROBLEMA 2.18
+void gancho_2p( unsigned n) {
+    
+    assert(n>=3) ;
+
+    using namespace std ;
+    using namespace glm ;
+
+    vector <vec3> vertices ;
+
+    for (unsigned i = 0 ; i < n; i++) {
+        vertices.push_back(vec3(cos(2*M_PI*i/n), sin(2*M_PI*i/n),1)) ;
+    }
+
+    for (unsigned i= 0 ; i < n-1 ; i++) {
+        gancho_2p(vertices[i],vertices[i+1]) ;
+    }
+
+    gancho_2p(vertices[n-1], vertices[0]) ;
+}
+
+// PROBLEMA 2.20
+void FiguraSimple() {
+
+    using namespace glm ;
+    using namespace std ;
+
+    vector <vec2> vertices = {{0.0,0.0}, {1.0,0.0}, {1.0,1.0}, {0.0,1.0}} ;
+    vector <uvec3> triangulos = {{0,1,2},{0,2,3}} ;
+
+    DescrVAO * dvao_cuadrado = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+    dvao_cuadrado -> agregar(new DescrVBOInds(triangulos)) ;
+
+    DescrVAO * dvao_contorno = new DescrVAO(1, new DescrVBOAtribs(0,vertices)) ;
+
+    vector <vec2> vertices_triangulo = {{0.1,0.1}, {0.4,0.1}, {0.25,0.6}} ;
+    DescrVAO * dvao_triangulo = new DescrVAO(1, new DescrVBOAtribs(0,vertices_triangulo)) ;
+
+    glDisable( GL_DEPTH_TEST );
+
+    cauce -> fijarColor({0.7,0.7,1.0});
+    dvao_cuadrado -> draw(GL_TRIANGLES) ;
+    cauce -> fijarColor({0.0,0.0,1.0});
+    dvao_contorno -> draw(GL_LINE_LOOP) ;
+    cauce -> fijarColor({1.0,1.0,1.0});
+    dvao_triangulo -> draw(GL_TRIANGLES) ;
+    cauce -> fijarColor({0.0,0.0,1.0});
+    dvao_triangulo -> draw(GL_LINE_LOOP) ;
+} 
+
+// problema 2.21
+void FiguraCompleja() {
+
+    using namespace glm ;
+
+    cauce -> pushMM() ;
+        cauce -> compMM(translate(vec3(-3.0f, 0.0f, 0.0f))) ;
+        FiguraSimple() ;
+    
+    cauce -> pushMM() ;
+
+        float escala = sqrt(8) ;
+
+        cauce -> compMM(translate(vec3(2.0f, 2.0f, 0.0f))) ;
+        cauce -> compMM(scale(vec3(1.0f,-1.0f,1.0f))) ;
+        cauce -> compMM(rotate(radians(45.0f), vec3(0.0f,0.0f,1.0f))) ;
+        cauce -> compMM(scale(vec3(escala/2,escala/2,escala/2))) ;
+        FiguraSimple() ;
+    
+    cauce -> popMM() ;
+    cauce -> pushMM() ;
+
+        cauce -> compMM(translate(vec3(3.0f, 1.0f, 0.0f))) ;
+        cauce -> compMM(scale(vec3(2.0f,-1.0f,1.0f))) ;
+        FiguraSimple() ;
+
+    cauce -> popMM() ;
+    cauce -> popMM() ;
+
+}
+
+
+// PROBLEMA 2.22
+void Tronco() {
+    using namespace glm ;
+    using namespace std ;
+
+    vector <vec2> vertices_contorno = {{0.0,0.0}, {0.0,1.5}, {0.0,1.5}, {-0.5,3.0}, 
+                                       {1.0,0.0}, {1.0,1.0}, {1.0,1.0}, {2.0,2.0}, 
+                                       {1.5,2.5}, {0.5,1.5}, {0.5,1.5}, {0.0,3.0}} ;
+
+    vector <vec2> vertices_relleno = {{0.0,0.0}, {1.0,0.0}, {1.0,1.0}, {2.0,2.0}, 
+                                      {1.5,2.5}, {0.5,1.5}, {0.0,3.0}, {-0.5,3.0},
+                                      {0.0,1.5} } ;
+
+    vector <uvec3> triangulos = {{0,1,5},{0,5,8},{1,5,2},{8,6,5},{8,7,6},{5,3,4},{2,5,3}} ;                    
+
+    DescrVAO * dvao_relleno = new DescrVAO(1, new DescrVBOAtribs(0,vertices_relleno)) ;
+    dvao_relleno -> agregar(new DescrVBOInds(triangulos)) ;
+
+
+    DescrVAO * dvao_contorno = new DescrVAO(1, new DescrVBOAtribs(0,vertices_contorno)) ;
+
+    glDisable( GL_DEPTH_TEST );
+
+    cauce -> fijarColor({0.7,0.7,1.0});
+    dvao_relleno -> draw(GL_TRIANGLES) ;
+    cauce -> fijarColor({0.0,0.0,1.0});
+    dvao_contorno -> draw(GL_LINES) ;   
+
+}
+
+void Arbol(const unsigned n) {
+    
+    using namespace glm;
+
+    Tronco() ;
+
+    if (n>1) {
+        cauce -> pushMM() ;
+            cauce -> compMM(translate(vec3(-0.5,3.0,0.0))) ;
+            cauce -> compMM(scale(vec3(0.5,0.5,1.0))) ;
+            Arbol(n-1) ;
+        cauce -> popMM() ;
+        cauce -> pushMM() ;
+            cauce -> compMM(translate(vec3(1.5,2.5,0.0))) ;
+            cauce -> compMM(rotate((float) -M_PI/4, vec3(0.0f,0.0f,1.0f))) ;
+            cauce -> compMM(scale(vec3(sqrt(2)/2,sqrt(2)/2,1.0))) ;
+            Arbol(n-1) ;
+        cauce -> popMM() ;
+
+    }
+
+
+}
 /******************************************************************************/
 /******************************************************************************/
 
@@ -567,23 +778,29 @@ void VisualizarFrame( )
     glDisable( GL_DEPTH_TEST );
 
     // EJERCICIO 1.8: ARREGLAR EL REDIMENSIONADO
+    /*
     float proporcion_viewport = (float) ancho_actual / alto_actual ;
 
     if (proporcion_viewport > 1) {
-        float nuevo_ancho = 2 * proporcion_viewport ;
-        cauce->fijarRegionVisible(-nuevo_ancho/2,nuevo_ancho/2, -1, 1, -1, 1) ;
+        float nuevo_ancho = 2.0 * proporcion_viewport ;
+        cauce->fijarRegionVisible(-nuevo_ancho/2.0 ,nuevo_ancho/2.0, -1, 1, -1, 1) ;
     }
     else {
         float nuevo_alto = 2 / proporcion_viewport ;
         cauce->fijarRegionVisible(-1, 1, -nuevo_alto/2, nuevo_alto/2, -1, 1) ;
     }
 
-   assert( glGetError() == GL_NO_ERROR );
+    */
+
+   const float a = 7.0 ;
+
+    cauce->fijarRegionVisible(-a,a,-a,a,-a,a) ;
+    assert( glGetError() == GL_NO_ERROR );
 
 
     // AQUÍ LO QUE SE DIBUJA BUSCA AQUI
     // Dibujado
-    generaVerticesPoligono16(12) ;
+    FiguraCompleja() ;
     
     // comprobar y limpiar variable interna de error
     assert( glGetError() == GL_NO_ERROR );
